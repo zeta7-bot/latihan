@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Menu Latihan — 10 menit, 2× seminggu</title>
+<meta name="theme-color" content="#faf8f4">
+<style>
+  :root{
+    --paper:#faf8f4; --surface:#fff; --ink:#16150f; --soft:#5b574e;
+    --line:#e2ddd2; --line-2:#cfc8b8; --accent:#2f5d50; --accent-soft:#eaf1ee;
+    --warn:#8a3b1f;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font:16px/1.55 ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  .wrap{max-width:520px;margin:0 auto;padding:0 20px 56px}
+  header{border-bottom:1px solid var(--line);margin-bottom:22px}
+  .bar{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:16px 0;flex-wrap:wrap}
+  .mark{font-family:Georgia,serif;font-size:18px}
+  .status{font-size:12px;color:var(--soft);white-space:nowrap}
+  h1{font-family:Georgia,serif;font-weight:400;font-size:clamp(24px,6vw,30px);line-height:1.15;letter-spacing:-.01em;margin:0 0 8px}
+  .lede{color:var(--soft);font-size:14px;margin:0 0 20px}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:18px;margin-bottom:16px}
+  .card h2{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--soft);margin:0 0 12px;font-weight:600}
+
+  .big{font-family:Georgia,serif;font-size:22px;margin:0 0 4px}
+  .sub{color:var(--soft);font-size:14px;margin:0 0 16px}
+  .count{font:600 40px/1 var(--mono);letter-spacing:-.02em;margin:6px 0 2px}
+  .count small{font:400 13px/1 inherit;color:var(--soft);letter-spacing:0}
+
+  button{font:inherit;cursor:pointer;border-radius:4px;min-height:48px}
+  .btn{display:block;width:100%;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-size:16px;padding:12px 18px;transition:background .15s,border-color .15s}
+  .btn:hover{background:var(--accent);border-color:var(--accent)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:#fff;color:var(--ink);border-color:var(--line-2)}
+  .btn.ghost:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .btn.sm{min-height:40px;font-size:14px;padding:8px 14px;width:auto;display:inline-block}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .row .btn{flex:1 1 auto}
+  button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+  .bar-track{height:6px;background:#ece7dc;border-radius:99px;overflow:hidden;margin:0 0 16px}
+  .bar-fill{height:100%;width:0;background:var(--accent);transition:width .3s ease}
+
+  ol.moves{list-style:none;margin:0;padding:0}
+  ol.moves li{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);align-items:baseline;font-size:15px}
+  ol.moves li:last-child{border-bottom:0}
+  ol.moves .n{font:12px/1 var(--mono);color:var(--accent);flex:0 0 20px}
+  ol.moves .t{flex:1}
+  ol.moves .r{font:13px/1 var(--mono);color:var(--soft);flex:0 0 auto}
+
+  .note{font-size:13px;color:var(--soft);margin:12px 0 0}
+  .hist{list-style:none;margin:0;padding:0;font-size:14px}
+  .hist li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);color:var(--soft)}
+  .hist li:last-child{border:0}
+  .empty{font-size:14px;color:var(--soft);margin:0}
+  .tag{display:inline-block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;background:var(--accent-soft);color:var(--accent);border-radius:3px;padding:3px 8px;margin-left:8px}
+  .tag.off{background:#f6efe6;color:var(--warn)}
+  .done{color:var(--accent)}
+  footer{border-top:1px solid var(--line);margin-top:26px;padding-top:16px;font-size:12px;color:var(--soft)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <div class="mark">Menu Latihan</div>
+    <div class="status" id="todayStatus">—</div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div id="view-home">
+    <h1>10 menit, dua kali seminggu.</h1>
+    <p class="lede" id="dayLine">—</p>
+
+    <section class="card">
+      <h2>Program hari ini</h2>
+      <div class="bar-track"><div class="bar-fill" id="weekFill"></div></div>
+      <p class="sub" id="weekLine">—</p>
+      <ol class="moves" id="moveList"></ol>
+      <p class="note">Dua putaran. Istirahat 60 detik antar set. Kalau 8 kg terasa ringan, pelanin turunnya jadi 3 detik — jangan buru-buru nambah beban.</p>
+      <div class="row" style="margin-top:16px">
+        <button class="btn" id="start">Mulai sesi</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Riwayat</h2>
+      <ul class="hist" id="hist"></ul>
+      <p class="empty" id="histEmpty">Belum ada sesi tercatat.</p>
+    </section>
+  </div>
+
+  <div id="view-session" hidden>
+    <section class="card">
+      <h2 id="stepLabel">Gerakan 1 / 12</h2>
+      <div class="bar-track"><div class="bar-fill" id="sessFill"></div></div>
+      <p class="big" id="stepName">—</p>
+      <p class="sub" id="stepTarget">—</p>
+
+      <div id="timerBox" hidden>
+        <div class="count" id="timerCount">60<small> detik</small></div>
+      </div>
+
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="primary">Selesai set</button>
+        <button class="btn ghost sm" id="skip" type="button">Lewati</button>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="btn ghost sm" id="stop" type="button">Hentikan sesi</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="view-done" hidden>
+    <h1>Sesi selesai.</h1>
+    <p class="lede" id="doneSummary">—</p>
+    <section class="card">
+      <h2>Catat</h2>
+      <div class="row">
+        <button class="btn" id="save">Simpan sesi</button>
+        <button class="btn ghost sm" id="discard" type="button">Buang</button>
+      </div>
+      <p class="note">Tersimpan di perangkat ini saja, nggak dikirim ke mana pun.</p>
+    </section>
+  </div>
+
+  <footer>
+    Program: goblet squat, floor press, one-arm row, Romanian deadlift (RDL), shoulder press, plank — 2 putaran.
+    Beban 8 kg untuk gerakan besar, 4 kg untuk bahu.
+  </footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  const EXERCISES = [
+    { name:"Goblet squat",     target:"10 repetisi",            detail:"8 kg di depan dada",            type:"reps" },
+    { name:"Floor press",      target:"10 repetisi per sisi",   detail:"8 kg, rebahan",                 type:"reps" },
+    { name:"One-arm row",      target:"10 repetisi per sisi",   detail:"8 kg, tumpu di kasur/kursi",    type:"reps" },
+    { name:"Romanian deadlift",target:"10 repetisi",            detail:"8 kg, punggung lurus",          type:"reps" },
+    { name:"Shoulder press",   target:"10 repetisi",            detail:"4 kg, terakhir karena paling capek", type:"reps" },
+    { name:"Plank",            target:"30 detik",               detail:"tahan, jangan tahan napas",     type:"time", seconds:30 }
+  ];
+  const ROUNDS = 2, REST = 60;
+
+  const $ = (id) => document.getElementById(id);
+  const KEY = "latihan.sessions.v1";
+
+  /* ---------- bangun daftar langkah ---------- */
+  function buildSteps(){
+    const steps = [];
+    for (let r = 1; r <= ROUNDS; r++){
+      EXERCISES.forEach((ex, i) => {
+        steps.push({ ...ex, round:r, index:i+1 });
+        const isLastOfAll = (r === ROUNDS && i === EXERCISES.length - 1);
+        if (!isLastOfAll) steps.push({ name:"Istirahat", target:`${REST} detik`, detail:"atur napas", type:"rest", seconds:REST });
+      });
+    }
+    return steps;
+  }
+
+  /* ---------- penyimpanan ---------- */
+  function load(){
+    try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; }
+  }
+  function save(list){
+    try { localStorage.setItem(KEY, JSON.stringify(list.slice(-60))); } catch {}
+  }
+  const WIB = (d) => new Date(d).toLocaleDateString("id-ID", { weekday:"short", day:"numeric", month:"short" });
+
+  function sessionsThisWeek(){
+    const list = load();
+    const now = new Date();
+    const day = (now.getDay() + 6) % 7;              // Senin = 0
+    const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - day);
+    return list.filter(s => new Date(s.at) >= start).length;
+  }
+
+  function renderHome(){
+    const now = new Date();
+    const dow = now.getDay();                        // 1=Senin, 5=Jumat
+    const isRepDay = dow === 1 || dow === 5;
+    const isWalkDay = dow === 2 || dow === 4;
+
+    $("todayStatus").textContent = now.toLocaleDateString("id-ID", { weekday:"long", day:"numeric", month:"long" });
+    $("dayLine").innerHTML = isRepDay
+      ? 'Hari latihan beban. Sepuluh menit, sebelum buka laptop kerja.'
+      : isWalkDay
+        ? 'Hari kantor — targetnya gerak: 6.000 langkah, itu sudah cukup.'
+        : 'Hari bebas. Boleh jalan santai, boleh kosong.';
+
+    $("moveList").innerHTML = EXERCISES.map((ex, i) =>
+      `<li><span class="n">${i+1}</span><span class="t">${ex.name}<br><span style="font-size:13px;color:var(--soft)">${ex.detail}</span></span><span class="r">${ex.target}</span></li>`
+    ).join("");
+
+    const n = sessionsThisWeek();
+    $("weekLine").innerHTML = `Sesi minggu ini: <strong>${n} / 2</strong>` + (n >= 2 ? ' <span class="tag done">target tercapai</span>' : '');
+    $("weekFill").style.width = Math.min(100, (n / 2) * 100) + "%";
+
+    $("start").textContent = "Mulai sesi";
+
+    const list = load().slice().reverse().slice(0, 8);
+    $("hist").innerHTML = list.map(s => `<li><span>${WIB(s.at)}</span><span>${s.done}/${s.total} set</span></li>`).join("");
+    $("histEmpty").hidden = list.length > 0;
+  }
+
+  /* ---------- mesin sesi ---------- */
+  let steps = [], cursor = 0, doneCount = 0, ticker = null, remaining = 0, startedAt = 0;
+
+  function show(view){
+    ["home","session","done"].forEach(v => $("view-" + v).hidden = (v !== view));
+  }
+
+  function announce(n){
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.frequency.value = n === "rest" ? 520 : 660;
+      o.connect(g); g.connect(ctx.destination);
+      g.gain.setValueAtTime(0.001, ctx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.15, ctx.currentTime + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+      o.start(); o.stop(ctx.currentTime + 0.36);
+    } catch {}
+  }
+
+  function renderStep(){
+    const st = steps[cursor];
+    const setNo = steps.slice(0, cursor + 1).filter(s => s.type !== "rest").length;
+    $("stepLabel").textContent = st.type === "rest" ? "Istirahat" : `Set ${setNo} / ${EXERCISES.length * ROUNDS}` + (st.round === 2 ? " · putaran 2" : " · putaran 1");
+    $("stepName").textContent = st.name;
+    $("stepTarget").textContent = st.type === "rest" ? `Istirahat ${st.seconds} detik. Set berikutnya: ${steps[cursor+1] ? steps[cursor+1].name : "selesai"}.` : `${st.target} — ${st.detail}`;
+    $("sessFill").style.width = ((cursor + 1) / steps.length) * 100 + "%";
+    $("primary").textContent = st.type === "rest" ? "Lewati istirahat" : "Selesai set";
+    $("skip").hidden = st.type !== "reps" && st.type !== "time" ? true : false;
+
+    clearInterval(ticker); ticker = null;
+    $("timerBox").hidden = true;
+
+    if (st.type === "rest" || st.type === "time"){
+      startCountdown(st.seconds);
+    }
+  }
+
+  function startCountdown(sec){
+    remaining = sec;
+    $("timerBox").hidden = false;
+    const paint = () => {
+      $("timerCount").innerHTML = remaining + "<small> detik</small>";
+      if (remaining <= 0){
+        clearInterval(ticker); ticker = null;
+        announce(steps[cursor].type === "rest" ? "rest" : "work");
+        next();
+      }
+      remaining--;
+    };
+    paint();
+    ticker = setInterval(paint, 1000);
+  }
+
+  function next(){
+    if (cursor >= steps.length - 1){ finish(); return; }
+    cursor++;
+    if (steps[cursor].type !== "rest") doneCount++;
+    renderStep();
+  }
+
+  function finish(){
+    clearInterval(ticker); ticker = null;
+    const total = EXERCISES.length * ROUNDS;
+    const dur = Math.max(1, Math.round((Date.now() - startedAt) / 60000));
+    $("doneSummary").textContent = `${doneCount} dari ${total} set selesai dalam ${dur} menit. Simpan biar kelihatan polanya nanti.`;
+    window.__lastSession = { at: new Date().toISOString(), done: doneCount, total: total, minutes: dur };
+    show("done");
+  }
+
+  function startSession(){
+    steps = buildSteps(); cursor = 0; doneCount = 1; startedAt = Date.now();
+    show("session");
+    renderStep();
+  }
+
+  /* ---------- event ---------- */
+  $("start").addEventListener("click", startSession);
+
+  $("primary").addEventListener("click", () => {
+    const st = steps[cursor];
+    if (st.type === "rest"){ clearInterval(ticker); ticker = null; next(); return; }
+    next();
+  });
+
+  $("skip").addEventListener("click", () => { clearInterval(ticker); ticker = null; next(); });
+
+  $("stop").addEventListener("click", () => {
+    clearInterval(ticker); ticker = null;
+    if (confirm("Hentikan sesi ini tanpa mencatat?")) show("home");
+  });
+
+  $("save").addEventListener("click", () => {
+    const s = window.__lastSession;
+    if (s){ const list = load(); list.push(s); save(list); }
+    show("home"); renderHome();
+  });
+
+  $("discard").addEventListener("click", () => { show("home"); renderHome(); });
+
+  renderHome();
+})();
+</script>
+</body>
+</html>
